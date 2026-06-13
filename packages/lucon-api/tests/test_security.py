@@ -11,9 +11,14 @@ from tests.conftest import ClientFactory
 def test_api_key_required_when_configured(make_client: ClientFactory) -> None:
     client = make_client(api_key="secret")
     assert client.get("/v1/channels/1").status_code == 401
-    assert client.get("/v1/channels/1", headers={"X-API-Key": "secret"}).status_code == 200
     assert (
-        client.get("/v1/channels/1", headers={"Authorization": "Bearer secret"}).status_code == 200
+        client.get("/v1/channels/1", headers={"X-API-Key": "secret"}).status_code == 200
+    )
+    assert (
+        client.get(
+            "/v1/channels/1", headers={"Authorization": "Bearer secret"}
+        ).status_code
+        == 200
     )
 
 

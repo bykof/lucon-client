@@ -136,7 +136,9 @@ class Transport:
                 sock.connect((self._host, self._port))
             except OSError as exc:
                 sock.close()
-                raise LuconConnectionError(f"cannot open socket to {self._host}:{self._port}: {exc}")
+                raise LuconConnectionError(
+                    f"cannot open socket to {self._host}:{self._port}: {exc}"
+                )
             sock.settimeout(_POLL_INTERVAL_S)
             self._sock = sock
             self._stop.clear()
@@ -316,11 +318,17 @@ class Transport:
             recent_echo = self._recent_echo
         if waiting:
             # Echo mismatch while waiting: a stale/late reply — ignore.
-            _LOG.debug("ignoring stale reply %r (awaiting %r)", response.echo, self._expected_echo)
+            _LOG.debug(
+                "ignoring stale reply %r (awaiting %r)",
+                response.echo,
+                self._expected_echo,
+            )
         elif response.echo is not None and response.echo == recent_echo:
             # A duplicate of the just-completed request (a slow device answered
             # both the original and the retransmit): drop it, not an event.
-            _LOG.debug("dropping duplicate reply %r for completed request", response.echo)
+            _LOG.debug(
+                "dropping duplicate reply %r for completed request", response.echo
+            )
         else:
             # Solicited-looking datagram with no waiter: treat as an event.
             self._dispatch_event(response)

@@ -99,10 +99,16 @@ class LimitsIn(BaseModel):
     """
 
     continuous_ma: float | None = Field(
-        None, ge=0, le=_MAX_CONTINUOUS_MA, description="Whole mA; device truncates any fraction."
+        None,
+        ge=0,
+        le=_MAX_CONTINUOUS_MA,
+        description="Whole mA; device truncates any fraction.",
     )
     pulse_ma: float | None = Field(
-        None, ge=0, le=_MAX_HIGH_MA, description="Whole mA; device truncates any fraction."
+        None,
+        ge=0,
+        le=_MAX_HIGH_MA,
+        description="Whole mA; device truncates any fraction.",
     )
     voltage_mv: int | None = Field(None, ge=_MIN_VOLTAGE_MV, le=_MAX_VOLTAGE_MV)
 
@@ -135,7 +141,9 @@ class TriggerOutputIn(BaseModel):
     source: SourceName | None = None
     type: OutputTypeName | None = None
     delay_us: int | None = Field(None, ge=_MIN_OUTPUT_DELAY_US, le=_MAX_OUTPUT_DELAY_US)
-    length_us: int | None = Field(None, ge=_MIN_OUTPUT_LENGTH_US, le=_MAX_OUTPUT_LENGTH_US)
+    length_us: int | None = Field(
+        None, ge=_MIN_OUTPUT_LENGTH_US, le=_MAX_OUTPUT_LENGTH_US
+    )
 
 
 class TriggerOutputOut(BaseModel):
@@ -292,7 +300,9 @@ class NetworkIn(BaseModel):
 
 
 class SaveIn(BaseModel):
-    scope: int = Field(..., ge=0, le=2, description="0=general, 1=general+channel, 2=all channels.")
+    scope: int = Field(
+        ..., ge=0, le=2, description="0=general, 1=general+channel, 2=all channels."
+    )
 
 
 class FactoryResetIn(BaseModel):

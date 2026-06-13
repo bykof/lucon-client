@@ -43,7 +43,9 @@ def test_timeout_marks_gateway_unhealthy(client: TestClient, fake: FakeLucon) ->
     assert poll_until(lambda: not gateway.ready, timeout=3.0)
 
 
-def test_malformed_device_value_maps_to_502(client: TestClient, fake: FakeLucon) -> None:
+def test_malformed_device_value_maps_to_502(
+    client: TestClient, fake: FakeLucon
+) -> None:
     # Regression: a non-numeric device reply is a device-protocol error (502),
     # not a client value error (422).
     fake.set_read(0, "UDP", "not-a-number")

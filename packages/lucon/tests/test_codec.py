@@ -181,12 +181,16 @@ def test_format_current_rejects_negative() -> None:
 # regardless of mode. TODO: confirm the device's convention on real hardware.
 
 
-@pytest.mark.parametrize("text, expected", [("31", 31.0), ("35.4", 35.4), ("100", 100.0), ("0", 0.0)])
+@pytest.mark.parametrize(
+    "text, expected", [("31", 31.0), ("35.4", 35.4), ("100", 100.0), ("0", 0.0)]
+)
 def test_parse_current_decimal_mode(text: str, expected: float) -> None:
     assert codec.parse_current(text) == pytest.approx(expected)
 
 
-@pytest.mark.parametrize("text, expected", [("354", 35.4), ("109", 10.9), ("300", 30.0)])
+@pytest.mark.parametrize(
+    "text, expected", [("354", 35.4), ("109", 10.9), ("300", 30.0)]
+)
 def test_parse_current_tenths_mode(text: str, expected: float) -> None:
     assert codec.parse_current(text, tenths=True) == pytest.approx(expected)
 
@@ -240,7 +244,12 @@ def test_parse_command_tolerates_any_or_missing_delimiter() -> None:
 def test_encode_then_parse_command_round_trips(verb: str) -> None:
     encode = codec.encode_set if verb == "S" else codec.encode_read
     cmd = codec.parse_command(encode(7, "MC", "100", "200"))
-    assert (cmd.verb, cmd.channel, cmd.cmd, cmd.values) == (verb, 7, "MC", ("100", "200"))
+    assert (cmd.verb, cmd.channel, cmd.cmd, cmd.values) == (
+        verb,
+        7,
+        "MC",
+        ("100", "200"),
+    )
 
 
 @pytest.mark.parametrize("data", [b"X01MC\r\n", b"S1\r\n", b"\r\n", b"SXYMC\r\n"])

@@ -185,7 +185,9 @@ def register_exception_handlers(app: FastAPI) -> None:
         _LOG.warning("unhandled ValueError mapped to 502: %s", exc, exc_info=True)
         return JSONResponse(
             status_code=502,
-            content=_envelope("device_protocol_error", f"could not parse a device value: {exc}"),
+            content=_envelope(
+                "device_protocol_error", f"could not parse a device value: {exc}"
+            ),
         )
 
     @app.exception_handler(RequestValidationError)

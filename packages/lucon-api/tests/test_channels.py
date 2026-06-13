@@ -26,7 +26,12 @@ def test_set_pulse_mode_sends_microseconds(client: TestClient, fake: FakeLucon) 
 
 
 def test_set_switch_mode(client: TestClient, fake: FakeLucon) -> None:
-    assert client.put("/v1/channels/2/mode", json={"mode": "switch", "ma": 5000}).status_code == 200
+    assert (
+        client.put(
+            "/v1/channels/2/mode", json={"mode": "switch", "ma": 5000}
+        ).status_code
+        == 200
+    )
     assert fake._memory[(2, "MT")] == ("5000",)
 
 
@@ -48,7 +53,9 @@ def test_continuous_over_3a_rejected(client: TestClient) -> None:
 
 
 def test_pulse_missing_duration_rejected(client: TestClient) -> None:
-    resp = client.put("/v1/channels/1/mode", json={"mode": "pulse", "ma": 8000, "delay_us": 100})
+    resp = client.put(
+        "/v1/channels/1/mode", json={"mode": "pulse", "ma": 8000, "delay_us": 100}
+    )
     assert resp.status_code == 422
 
 
@@ -72,15 +79,22 @@ def test_set_and_read_limits(client: TestClient, fake: FakeLucon) -> None:
     assert body == {"continuous_ma": 2000.0, "pulse_ma": 15000.0, "voltage_mv": 12000}
 
 
-def test_partial_limits_only_writes_provided(client: TestClient, fake: FakeLucon) -> None:
-    assert client.put("/v1/channels/3/limits", json={"voltage_mv": 30000}).status_code == 200
+def test_partial_limits_only_writes_provided(
+    client: TestClient, fake: FakeLucon
+) -> None:
+    assert (
+        client.put("/v1/channels/3/limits", json={"voltage_mv": 30000}).status_code
+        == 200
+    )
     assert fake._memory[(3, "V")] == ("30000",)
     assert (3, "L") not in fake._memory
     assert (3, "LP") not in fake._memory
 
 
 def test_voltage_limit_out_of_range_rejected(client: TestClient) -> None:
-    assert client.put("/v1/channels/1/limits", json={"voltage_mv": 999}).status_code == 422
+    assert (
+        client.put("/v1/channels/1/limits", json={"voltage_mv": 999}).status_code == 422
+    )
 
 
 # --- trigger config -----------------------------------------------------
@@ -89,14 +103,22 @@ def test_voltage_limit_out_of_range_rejected(client: TestClient) -> None:
 def test_set_and_read_trigger_input(client: TestClient, fake: FakeLucon) -> None:
     resp = client.put(
         "/v1/channels/1/trigger/input",
-        json={"pulse_edge": "falling", "switch_active_high": True, "switch_current_ma": 3000},
+        json={
+            "pulse_edge": "falling",
+            "switch_active_high": True,
+            "switch_current_ma": 3000,
+        },
     )
     assert resp.status_code == 200
     assert fake._memory[(1, "I")] == ("1",)  # falling -> "1"
     assert fake._memory[(1, "ST")] == ("1",)
     assert fake._memory[(1, "SC")] == ("3000",)
     body = client.get("/v1/channels/1/trigger/input").json()
-    assert body == {"pulse_edge": "falling", "switch_active_high": True, "switch_current_ma": 3000.0}
+    assert body == {
+        "pulse_edge": "falling",
+        "switch_active_high": True,
+        "switch_current_ma": 3000.0,
+    }
 
 
 def test_set_and_read_trigger_output(client: TestClient, fake: FakeLucon) -> None:
@@ -114,7 +136,9 @@ def test_set_and_read_trigger_output(client: TestClient, fake: FakeLucon) -> Non
     assert resp.status_code == 200
     assert fake._memory[(1, "O")] == ("1",)
     assert fake._memory[(1, "OTE")] == ("0",)  # rising -> "0"
-    assert fake._memory[(1, "OTS")] == ("1",)  # lighting SET token -> "1" (confirmed fw 0.5.0)
+    assert fake._memory[(1, "OTS")] == (
+        "1",
+    )  # lighting SET token -> "1" (confirmed fw 0.5.0)
     assert fake._memory[(1, "OTT")] == ("1",)  # while_lit -> "1"
     body = client.get("/v1/channels/1/trigger/output").json()
     assert body == {

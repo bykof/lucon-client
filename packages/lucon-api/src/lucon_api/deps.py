@@ -7,7 +7,11 @@ from typing import Annotated
 from fastapi import Depends, Request
 
 from lucon_api.config import Settings
-from lucon_api.errors import ConfirmationError, DeviceUnavailableError, UnauthorizedError
+from lucon_api.errors import (
+    ConfirmationError,
+    DeviceUnavailableError,
+    UnauthorizedError,
+)
 from lucon_api.events import EventHub
 from lucon_api.gateway import Gateway
 
@@ -58,7 +62,9 @@ def require_confirm(gateway: Gateway, confirm: str) -> None:
     """
     serial = gateway.serial
     if serial is None:
-        raise DeviceUnavailableError("device serial unknown; cannot confirm a destructive op")
+        raise DeviceUnavailableError(
+            "device serial unknown; cannot confirm a destructive op"
+        )
     if confirm != serial:
         raise ConfirmationError(
             "confirmation must equal the device serial (see GET /v1/chain/serial)"

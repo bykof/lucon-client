@@ -247,7 +247,9 @@ class Lucon:
         Validated client-side; an out-of-range scope raises before the wire.
         """
         if scope not in _VALID_SCOPES:
-            raise ValueError(f"save scope must be in {sorted(_VALID_SCOPES)}, got {scope}")
+            raise ValueError(
+                f"save scope must be in {sorted(_VALID_SCOPES)}, got {scope}"
+            )
         self._transport.send(codec.encode_set(0, "S", str(scope)))
 
     def save_general(self) -> None:
@@ -271,7 +273,9 @@ class Lucon:
         scope raises before the wire.
         """
         if scope not in _VALID_SCOPES:
-            raise ValueError(f"factory_reset scope must be in {sorted(_VALID_SCOPES)}, got {scope}")
+            raise ValueError(
+                f"factory_reset scope must be in {sorted(_VALID_SCOPES)}, got {scope}"
+            )
         self._transport.send(codec.encode_set(0, "FR", str(scope)))
 
     def save_and_restart(self, scope: int) -> None:
@@ -281,7 +285,9 @@ class Lucon:
         connected units. Validated client-side.
         """
         if scope not in _VALID_SCOPES:
-            raise ValueError(f"save_and_restart scope must be in {sorted(_VALID_SCOPES)}, got {scope}")
+            raise ValueError(
+                f"save_and_restart scope must be in {sorted(_VALID_SCOPES)}, got {scope}"
+            )
         self._transport.send(codec.encode_set(0, "SR", str(scope)))
 
     def restart(self) -> None:

@@ -83,7 +83,9 @@ def test_factory_reset_requires_confirmation(client: TestClient) -> None:
     assert bad.json()["error"]["type"] == "confirmation_required"
 
 
-def test_network_ip_only_uses_serial_checked(client: TestClient, fake: FakeLucon) -> None:
+def test_network_ip_only_uses_serial_checked(
+    client: TestClient, fake: FakeLucon
+) -> None:
     resp = client.put(
         "/v1/chain/network", json={"ip": "192.168.0.99", "confirm": _SERIAL}
     )
@@ -99,7 +101,9 @@ def test_network_requires_at_least_one_field(client: TestClient) -> None:
     assert resp.json()["error"]["type"] == "invalid_value"
 
 
-def test_network_multi_field_still_uses_serial_checked_ip(client: TestClient, fake: FakeLucon) -> None:
+def test_network_multi_field_still_uses_serial_checked_ip(
+    client: TestClient, fake: FakeLucon
+) -> None:
     # Regression: an IP change combined with another field must STILL use the
     # firmware serial-checked command (SIP), not plain set_ip.
     resp = client.put(

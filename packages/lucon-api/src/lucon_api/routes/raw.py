@@ -19,7 +19,9 @@ router = APIRouter(tags=["raw"])
 
 
 @router.post("/raw", response_model=RawOut)
-def raw_command(gateway: GatewayDepInstance, settings: SettingsDep, body: RawIn) -> RawOut:
+def raw_command(
+    gateway: GatewayDepInstance, settings: SettingsDep, body: RawIn
+) -> RawOut:
     """Send a single raw SET/READ command and return the decoded response."""
     if not settings.enable_raw:
         # Truly invisible when disabled: a generic 404, indistinguishable from any

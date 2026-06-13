@@ -64,7 +64,9 @@ def get_chain(
     """Master identity + chain topology (curated from cache, or ``?detail=full``)."""
     if detail == "full":
         fields = list(CHAIN_READS)
-        readings, unavailable = gateway.with_chain(lambda lucon: collect(lucon, CHAIN_READS, fields))
+        readings, unavailable = gateway.with_chain(
+            lambda lucon: collect(lucon, CHAIN_READS, fields)
+        )
         return ChainIdentity(
             offsets=gateway.offsets(),
             online_channels=gateway.online_channels(),
@@ -159,7 +161,11 @@ def patch_config(gateway: GatewayDepInstance, body: ConfigIn) -> ConfigOut:
     return ConfigOut(current_tenths=gateway.current_tenths)
 
 
-@router.post("/device/reconnect", response_model=ReconnectAck, status_code=status.HTTP_202_ACCEPTED)
+@router.post(
+    "/device/reconnect",
+    response_model=ReconnectAck,
+    status_code=status.HTTP_202_ACCEPTED,
+)
 def reconnect(gateway: GatewayDepInstance) -> ReconnectAck:
     """Force a fresh open()+tree-rebuild (e.g. after manual device changes)."""
     gateway.request_reconnect()

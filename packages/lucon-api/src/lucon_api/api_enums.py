@@ -71,7 +71,9 @@ _SOURCE_TO_NAME: dict[OutputTriggerSource, SourceName] = {
     OutputTriggerSource.INPUT: SourceName.INPUT,
     OutputTriggerSource.LIGHTING: SourceName.LIGHTING,
 }
-_NAME_TO_SOURCE: dict[str, OutputTriggerSource] = {v: k for k, v in _SOURCE_TO_NAME.items()}
+_NAME_TO_SOURCE: dict[str, OutputTriggerSource] = {
+    v: k for k, v in _SOURCE_TO_NAME.items()
+}
 
 _TYPE_TO_NAME: dict[OutputTriggerType, OutputTypeName] = {
     OutputTriggerType.TIME_LIMITED: OutputTypeName.TIME_LIMITED,
@@ -111,7 +113,9 @@ def output_polarity_name(edge: TriggerEdge) -> OutputPolarityName:
         return OutputPolarityName.RISING
     if edge is TriggerEdge.FALLING:
         return OutputPolarityName.FALLING
-    raise ValueError(f"output polarity must be rising or falling, got {edge.name.lower()}")
+    raise ValueError(
+        f"output polarity must be rising or falling, got {edge.name.lower()}"
+    )
 
 
 def source_name(source: OutputTriggerSource) -> SourceName:

@@ -372,11 +372,7 @@ def test_unsolicited_read_reply_with_no_waiter_is_routed_as_event() -> None:
             # The handshake registered the transport as the server's remote;
             # push an unsolicited READ_REPLY back to it, as a real device would.
             unsolicited = (
-                "R02CM"
-                + codec.DELIMITER
-                + "4"
-                + codec.DELIMITER
-                + codec.TERMINATOR
+                "R02CM" + codec.DELIMITER + "4" + codec.DELIMITER + codec.TERMINATOR
             ).encode("ascii")
             server.inject(unsolicited)
             assert fired.wait(2.0), "on_event did not fire for unmatched reply"
@@ -441,15 +437,15 @@ def test_unsolicited_overtemp_during_request_still_reaches_on_error() -> None:
         fired.set()
 
     overtemp = (
-        ":E Overtemperature on Channel 01"
-        + codec.DELIMITER
-        + codec.TERMINATOR
+        ":E Overtemperature on Channel 01" + codec.DELIMITER + codec.TERMINATOR
     ).encode("ascii")
     # The server delays the real reply, then injects an overtemp while the
     # READ is in flight; the transport must surface the overtemp to on_error.
     with _DelayedReply(delay=0.3, reply=overtemp) as server:
         host, port = server.address
-        with Transport(host, port, timeout=2.0, retries=0, on_error=on_error) as transport:
+        with Transport(
+            host, port, timeout=2.0, retries=0, on_error=on_error
+        ) as transport:
             with pytest.raises(LuconCommandError):
                 transport.query(codec.encode_read(1, "T"))
             assert fired.wait(2.0), "overtemp during request never reached on_error"

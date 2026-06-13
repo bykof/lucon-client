@@ -407,7 +407,9 @@ def test_output_polarity_read_parses_enum() -> None:
         assert lucon.channel(1).output_polarity() is TriggerEdge.RISING
 
 
-@pytest.mark.parametrize("wire", ["1", "2"])  # fw 0.5.0 reads/sets lighting as 1; stray 2 tolerated
+@pytest.mark.parametrize(
+    "wire", ["1", "2"]
+)  # fw 0.5.0 reads/sets lighting as 1; stray 2 tolerated
 def test_output_source_read_parses_enum(wire: str) -> None:
     with connected() as (fake, lucon):
         fake.set_read(1, "OTS", wire)

@@ -89,14 +89,18 @@ def parse_command(data: bytes) -> Command:
     """
     text = data.decode("ascii", errors="replace").rstrip("\r\n")
     if len(text) < 3 or text[0] not in ("S", "R"):
-        raise LuconProtocolError("command must start with S/R + 2-digit channel", raw=data)
+        raise LuconProtocolError(
+            "command must start with S/R + 2-digit channel", raw=data
+        )
     channel_field = text[1:3]
     if not channel_field.isdigit():
         raise LuconProtocolError("command channel must be two digits", raw=data)
     parts = text[3:].split("|")
     if not parts[0]:
         raise LuconProtocolError("command mnemonic missing", raw=data)
-    return Command(verb=text[0], channel=int(channel_field), cmd=parts[0], values=tuple(parts[1:]))
+    return Command(
+        verb=text[0], channel=int(channel_field), cmd=parts[0], values=tuple(parts[1:])
+    )
 
 
 # At or below this current, the device works in 0.1 mA steps; above it, whole mA.
@@ -149,9 +153,13 @@ def decode(data: bytes) -> Response:
         raise LuconProtocolError("empty response", raw=data)
     echo = lines[0]
     if echo.startswith(":E"):
-        return Response(kind=ResponseKind.ERROR, raw=data, message=echo.removeprefix(":E").strip())
+        return Response(
+            kind=ResponseKind.ERROR, raw=data, message=echo.removeprefix(":E").strip()
+        )
     if echo.startswith(":S"):
-        return Response(kind=ResponseKind.STATUS, raw=data, message=echo.removeprefix(":S").strip())
+        return Response(
+            kind=ResponseKind.STATUS, raw=data, message=echo.removeprefix(":S").strip()
+        )
     if echo.startswith("R"):
         return Response(
             kind=ResponseKind.READ_REPLY,

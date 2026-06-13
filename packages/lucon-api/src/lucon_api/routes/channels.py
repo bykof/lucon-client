@@ -86,7 +86,13 @@ CHANNEL_READS: dict[str, Callable[[Channel], Any]] = {
     "persisted": lambda ch: ch.is_persisted(),
 }
 
-CURATED_FIELDS = ["mode", "temperature_c", "current_flow_ma", "led_voltage_mv", "persisted"]
+CURATED_FIELDS = [
+    "mode",
+    "temperature_c",
+    "current_flow_ma",
+    "led_voltage_mv",
+    "persisted",
+]
 
 
 def _collect(channel: Channel, fields: list[str]) -> tuple[dict[str, Any], list[str]]:
@@ -96,7 +102,9 @@ def _collect(channel: Channel, fields: list[str]) -> tuple[dict[str, Any], list[
 
 def _provided(model: LimitsIn | TriggerInputIn | TriggerOutputIn) -> dict[str, Any]:
     """Fields the client actually sent and that are non-null (partial PUT)."""
-    return {k: v for k, v in model.model_dump(exclude_unset=True).items() if v is not None}
+    return {
+        k: v for k, v in model.model_dump(exclude_unset=True).items() if v is not None
+    }
 
 
 @router.get("/channels", response_model=list[ChannelSummary])
@@ -133,7 +141,13 @@ def get_channel(
 
     def read(channel: Channel) -> tuple[int, int, int, dict[str, Any], list[str]]:
         readings, unavailable = _collect(channel, fields)
-        return channel.channel_num, channel.controller.offset, channel.local_index, readings, unavailable
+        return (
+            channel.channel_num,
+            channel.controller.offset,
+            channel.local_index,
+            readings,
+            unavailable,
+        )
 
     num, offset, local, readings, unavailable = gateway.with_channel(n, read)
     return ChannelDetail(
@@ -233,7 +247,9 @@ def get_trigger_input(gateway: GatewayDep, n: ChannelNum) -> TriggerInputOut:
 
 
 @router.put("/channels/{n}/trigger/input", response_model=WriteAck)
-def set_trigger_input(gateway: GatewayDep, n: ChannelNum, body: TriggerInputIn) -> WriteAck:
+def set_trigger_input(
+    gateway: GatewayDep, n: ChannelNum, body: TriggerInputIn
+) -> WriteAck:
     """Configure the trigger/switch input (only the fields you send are written)."""
     vals = _provided(body)
 
@@ -267,7 +283,9 @@ def get_trigger_output(gateway: GatewayDep, n: ChannelNum) -> TriggerOutputOut:
 
 
 @router.put("/channels/{n}/trigger/output", response_model=WriteAck)
-def set_trigger_output(gateway: GatewayDep, n: ChannelNum, body: TriggerOutputIn) -> WriteAck:
+def set_trigger_output(
+    gateway: GatewayDep, n: ChannelNum, body: TriggerOutputIn
+) -> WriteAck:
     """Configure the trigger output (only the fields you send are written)."""
     vals = _provided(body)
 
@@ -275,7 +293,9 @@ def set_trigger_output(gateway: GatewayDep, n: ChannelNum, body: TriggerOutputIn
         if "enabled" in vals:
             channel.set_output_enabled(bool(vals["enabled"]))
         if "polarity" in vals:
-            channel.set_output_polarity(output_polarity_from_name(str(vals["polarity"])))
+            channel.set_output_polarity(
+                output_polarity_from_name(str(vals["polarity"]))
+            )
         if "source" in vals:
             channel.set_output_source(source_from_name(str(vals["source"])))
         if "type" in vals:

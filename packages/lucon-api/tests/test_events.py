@@ -29,7 +29,9 @@ def test_recent_after_id_filters(client: TestClient, fake: FakeLucon) -> None:
     assert poll_until(
         lambda: any(
             e["message"] == "second"
-            for e in client.get("/v1/events/recent", params={"after_id": first_id}).json()
+            for e in client.get(
+                "/v1/events/recent", params={"after_id": first_id}
+            ).json()
         )
     )
     filtered = client.get("/v1/events/recent", params={"after_id": first_id}).json()
@@ -42,7 +44,9 @@ def test_sse_framing() -> None:
     # the test portal on close. Fan-out/replay is covered via /events/recent.
     from lucon_api.routes.events import _format_sse
 
-    frame = _format_sse({"id": 7, "ts": 1.5, "kind": "error", "message": "overtemp", "raw": ":E x"})
+    frame = _format_sse(
+        {"id": 7, "ts": 1.5, "kind": "error", "message": "overtemp", "raw": ":E x"}
+    )
     assert "id: 7" in frame
     assert "event: error" in frame
     assert '"message": "overtemp"' in frame

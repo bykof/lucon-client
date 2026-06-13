@@ -70,7 +70,9 @@ def test_trigger_edge_from_wire_parses_numeric(token: str, edge: TriggerEdge) ->
         (" R ", TriggerEdge.RISING),
     ],
 )
-def test_trigger_edge_from_wire_parses_letter_form(token: str, edge: TriggerEdge) -> None:
+def test_trigger_edge_from_wire_parses_letter_form(
+    token: str, edge: TriggerEdge
+) -> None:
     # The device tolerates the letter form R/F/B (case-insensitive) on I; a
     # read reply may report it, so from_wire must accept it per its docstring.
     assert TriggerEdge.from_wire(token) is edge
@@ -101,11 +103,19 @@ def test_output_trigger_source_code_is_the_ots_token(
     ("token", "source"),
     [
         ("0", OutputTriggerSource.INPUT),
-        ("1", OutputTriggerSource.LIGHTING),  # confirmed fw 0.5.0 token (both directions)
-        ("2", OutputTriggerSource.LIGHTING),  # tolerated: manual SET-table value, rejected by hw
+        (
+            "1",
+            OutputTriggerSource.LIGHTING,
+        ),  # confirmed fw 0.5.0 token (both directions)
+        (
+            "2",
+            OutputTriggerSource.LIGHTING,
+        ),  # tolerated: manual SET-table value, rejected by hw
     ],
 )
-def test_output_trigger_source_from_wire(token: str, source: OutputTriggerSource) -> None:
+def test_output_trigger_source_from_wire(
+    token: str, source: OutputTriggerSource
+) -> None:
     assert OutputTriggerSource.from_wire(token) is source
 
 

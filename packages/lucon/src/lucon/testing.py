@@ -175,7 +175,9 @@ class FakeLucon:
         """Script the value the fake reports for a ``READ`` of ``(channel, cmd)``."""
         self._scripted_reads[(channel, cmd)] = value
 
-    def fail_next(self, message: str, *, channel: int | None = None, cmd: str | None = None) -> None:
+    def fail_next(
+        self, message: str, *, channel: int | None = None, cmd: str | None = None
+    ) -> None:
         """Make the next matching command reply with ``:E <message>``.
 
         With no ``channel``/``cmd`` the very next command (SET or READ) fails;

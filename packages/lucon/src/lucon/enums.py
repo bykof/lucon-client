@@ -70,7 +70,9 @@ class TriggerEdge(enum.Enum):
         Raises :class:`ValueError` for any other token.
         """
         stripped = token.strip()
-        letter = {"R": cls.RISING, "F": cls.FALLING, "B": cls.BOTH}.get(stripped.upper())
+        letter = {"R": cls.RISING, "F": cls.FALLING, "B": cls.BOTH}.get(
+            stripped.upper()
+        )
         if letter is not None:
             return letter
         return cls(stripped)

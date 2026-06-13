@@ -20,7 +20,12 @@ from lucon import Lucon, LuconConnectionError, LuconError, LuconTimeoutError
 from lucon.codec import Response, ResponseKind
 
 from lucon_api.config import Settings
-from lucon_api.errors import BusyError, DeadlineError, DeviceUnavailableError, NotFoundError
+from lucon_api.errors import (
+    BusyError,
+    DeadlineError,
+    DeviceUnavailableError,
+    NotFoundError,
+)
 from lucon_api.events import EventHub
 
 _LOG = logging.getLogger("lucon_api.gateway")
@@ -189,7 +194,9 @@ class Gateway:
                 )
             self._inflight += 1
         try:
-            acquired = self._device_lock.acquire(timeout=self._settings.request_deadline)
+            acquired = self._device_lock.acquire(
+                timeout=self._settings.request_deadline
+            )
             if not acquired:
                 raise DeadlineError("timed out waiting for the device transport")
             try:
@@ -254,7 +261,9 @@ class Gateway:
 
     def topology(self) -> list[dict[str, Any]]:
         """All controllers as ``{offset, is_master, channels:[global_num,...]}``."""
-        return self._read_tree(lambda lucon: [self._controller_dict(c) for c in lucon.controllers])
+        return self._read_tree(
+            lambda lucon: [self._controller_dict(c) for c in lucon.controllers]
+        )
 
     def controller_view(self, offset: int) -> dict[str, Any]:
         """One controller's topology (404 if no such offset)."""
@@ -271,7 +280,9 @@ class Gateway:
     def online_channels(self) -> list[int]:
         """Global channel numbers currently online, sorted."""
         return self._read_tree(
-            lambda lucon: sorted(ch.channel_num for c in lucon.controllers for ch in c.channels)
+            lambda lucon: sorted(
+                ch.channel_num for c in lucon.controllers for ch in c.channels
+            )
         )
 
     def offsets(self) -> list[int]:
@@ -341,7 +352,11 @@ class Gateway:
                 # exc_info keeps a LuconCommandError's command/raw bytes in the
                 # log (str() carries only the terse device message).
                 _LOG.warning(
-                    "connect to %s:%s failed: %s", self.host, self.port, exc, exc_info=True
+                    "connect to %s:%s failed: %s",
+                    self.host,
+                    self.port,
+                    exc,
+                    exc_info=True,
                 )
                 try:
                     self._lucon.close()

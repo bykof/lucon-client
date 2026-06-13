@@ -71,17 +71,23 @@ class Channel:
         return self._controller.offset * 4 + self._local_index
 
     def __repr__(self) -> str:
-        return f"Channel(channel_num={self.channel_num}, local_index={self._local_index})"
+        return (
+            f"Channel(channel_num={self.channel_num}, local_index={self._local_index})"
+        )
 
     # --- transport helpers ---------------------------------------------
 
     def _set(self, cmd: str, *values: str) -> Response:
         """Send a SET to this channel's wire address through the master."""
-        return self._controller._lucon.send(codec.encode_set(self.channel_num, cmd, *values))
+        return self._controller._lucon.send(
+            codec.encode_set(self.channel_num, cmd, *values)
+        )
 
     def _query(self, cmd: str, *values: str) -> Response:
         """Send a READ to this channel's wire address and return the reply."""
-        return self._controller._lucon.query(codec.encode_read(self.channel_num, cmd, *values))
+        return self._controller._lucon.query(
+            codec.encode_read(self.channel_num, cmd, *values)
+        )
 
     def _read_value(self, cmd: str) -> str:
         """READ ``cmd`` and return its first value token."""
@@ -98,7 +104,9 @@ class Channel:
         Writes Temporary memory only; call :meth:`save` to persist.
         """
         if not 0 <= ma <= _MAX_CONTINUOUS_MA:
-            raise ValueError(f"continuous current must be 0-{_MAX_CONTINUOUS_MA} mA, got {ma}")
+            raise ValueError(
+                f"continuous current must be 0-{_MAX_CONTINUOUS_MA} mA, got {ma}"
+            )
         self._set("MC", codec.format_current(ma))
 
     def set_switch_current(self, ma: float) -> None:
@@ -144,13 +152,17 @@ class Channel:
     def set_continuous_limit(self, ma: float) -> None:
         """Continuous current limit protecting the lighting (``L``, max 3 A)."""
         if not 0 <= ma <= _MAX_CONTINUOUS_MA:
-            raise ValueError(f"continuous limit must be 0-{_MAX_CONTINUOUS_MA} mA, got {ma}")
+            raise ValueError(
+                f"continuous limit must be 0-{_MAX_CONTINUOUS_MA} mA, got {ma}"
+            )
         self._set("L", codec.format_current(ma))
 
     def set_pulse_limit(self, ma: float) -> None:
         """Pulse/switch current limit protecting the lighting (``LP``, max 20 A)."""
         if not 0 <= ma <= _MAX_HIGH_MA:
-            raise ValueError(f"pulse/switch limit must be 0-{_MAX_HIGH_MA} mA, got {ma}")
+            raise ValueError(
+                f"pulse/switch limit must be 0-{_MAX_HIGH_MA} mA, got {ma}"
+            )
         self._set("LP", codec.format_current(ma))
 
     def set_voltage_limit(self, mv: int) -> None:
@@ -225,7 +237,9 @@ class Channel:
         return Mode.from_wire(self._read_value("CM"))
 
     def _read_current(self, cmd: str) -> float:
-        return codec.parse_current(self._read_value(cmd), tenths=self._controller._lucon._current_tenths)
+        return codec.parse_current(
+            self._read_value(cmd), tenths=self._controller._lucon._current_tenths
+        )
 
     def pulse_current(self) -> float:
         """Configured pulse current in mA (``PC``)."""
