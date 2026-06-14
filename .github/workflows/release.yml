@@ -1,0 +1,49 @@
+name: Release
+
+# Publishes ONLY the core `lucon` package to PyPI on a version tag (v*).
+# lucon-api is intentionally not published (it is a deployable gateway, not a library).
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v5
+
+      - run: uv pip install --system -e "./packages/lucon[dev]"
+
+      # Guard: the git tag (vX.Y.Z) must match lucon's declared version.
+      # GITHUB_REF_NAME is read as a runtime env var, never interpolated into the shell.
+      - name: Verify tag matches package version
+        run: |
+          pkg_version="$(python -c "import tomllib; print(tomllib.load(open('packages/lucon/pyproject.toml','rb'))['project']['version'])")"
+          tag_version="${GITHUB_REF_NAME#v}"
+          echo "tag=$tag_version pyproject=$pkg_version"
+          if [ "$tag_version" != "$pkg_version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match lucon version $pkg_version"
+            exit 1
+          fi
+
+      # Re-run the core checks on the tagged commit before anything irreversible.
+      - run: python -m mypy
+        working-directory: packages/lucon
+      - run: python -m pytest
+        working-directory: packages/lucon
+
+      - name: Build lucon distributions
+        run: uv build packages/lucon --out-dir dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist
+          password: ${{ secrets.PYPI_API_TOKEN }}

@@ -1,0 +1,4 @@
+# Repo-wide ruff config so CI lint results are deterministic across ruff versions.
+# Pinned ruff version lives in the CI workflow; this file pins the rule surface.
+target-version = "py311"
+extend-exclude = [".venv", "dist", "build"]

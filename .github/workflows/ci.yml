@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Newer pushes to the same ref supersede in-flight runs.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      # ruff is version-independent, so it runs once (not across the Python matrix).
+      # Pinned version keeps results deterministic; config lives in ./ruff.toml.
+      - run: uvx ruff@0.11.8 check packages/
+      - run: uvx ruff@0.11.8 format --check packages/
+
+  lucon:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: astral-sh/setup-uv@v5
+      - run: uv pip install --system -e "./packages/lucon[dev]"
+      - run: python -m mypy
+        working-directory: packages/lucon
+      - run: python -m pytest
+        working-directory: packages/lucon
+
+  lucon-api:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: astral-sh/setup-uv@v5
+      # lucon-api depends on the core; install the editable sibling first.
+      - run: uv pip install --system -e ./packages/lucon -e "./packages/lucon-api[dev]"
+      - run: python -m mypy
+        working-directory: packages/lucon-api
+      - run: python -m pytest
+        working-directory: packages/lucon-api
